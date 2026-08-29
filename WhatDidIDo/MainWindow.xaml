@@ -1,0 +1,416 @@
+<Window x:Class="WhatDidIDo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="WhatDidIDo" Height="680" Width="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#1A1A1E"
+        Foreground="#E0E0E0"
+        FontFamily="Consolas"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <!-- ボタンスタイル（開始） -->
+        <Style x:Key="StartButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#00D49D"/>
+            <Setter Property="Foreground" Value="#0D0D0F"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#00FFC2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#1A2A25"/>
+                                <Setter Property="Foreground" Value="#3A5A4A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ボタンスタイル（停止） -->
+        <Style x:Key="StopButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF5566"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FF7788"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#2A1A1D"/>
+                                <Setter Property="Foreground" Value="#5A3A3D"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ボタンスタイル（CSV） -->
+        <Style x:Key="CsvButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#323240"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#4A4A5A"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#45455A"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#5A5A6A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- クリアボタン -->
+        <Style x:Key="ClearButtonStyle" TargetType="Button" BasedOn="{StaticResource CsvButtonStyle}">
+        </Style>
+
+        <!-- チェックボックス -->
+        <Style x:Key="FilterCheckStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#D0D8E8"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- ListView -->
+        <Style x:Key="LogListStyle" TargetType="ListView">
+            <Setter Property="Background" Value="#111115"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                Padding="12,4">
+                            <GridViewRowPresenter Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#252535"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#304060"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- GridViewColumnHeader -->
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Background" Value="#22222A"/>
+            <Setter Property="Foreground" Value="#A0A8B8"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#3A3A4A"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <!-- ScrollBar -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="8"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="32"/>
+        </Grid.RowDefinitions>
+
+        <!-- ヘッダーバー -->
+        <Border Grid.Row="0" Background="#111115" BorderThickness="0,0,0,1" BorderBrush="#2A2A35">
+            <Grid Margin="20,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="8" Height="8" Fill="#00D49D" Margin="0,0,10,0"
+                             x:Name="StatusIndicator"/>
+                    <TextBlock Text="What Did I Do / Keyboard and Mouse Logger" FontSize="16" FontWeight="Bold"
+                               Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="RecordingLabel" Text="  ●  REC"
+                               FontSize="11" Foreground="#FF5566"
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock x:Name="CountLabel" Text="0 events"
+                               VerticalAlignment="Center" Margin="0,0,15,0"
+                               Foreground="#FFFFFF" FontSize="13" FontWeight="Bold"/>
+                    <Button x:Name="SettingsButton" Content="⚙" FontSize="16" Foreground="#A0A8B8"
+                            Background="Transparent" BorderThickness="0" Cursor="Hand"
+                            VerticalAlignment="Center" Click="SettingsButton_Click"
+                            ToolTip="設定">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="bd" Background="{TemplateBinding Background}" Padding="4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="bd" Property="Background" Value="#2A2A35"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- コントロールバー -->
+        <Border Grid.Row="1" Background="#1E1E26" Padding="20,14" BorderThickness="0,0,0,1" BorderBrush="#2A2A35">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" x:Name="StartButton"
+                        Content="▶  START" Style="{StaticResource StartButtonStyle}"
+                        Click="StartButton_Click"/>
+
+                <Button Grid.Column="1" x:Name="StopButton"
+                        Content="■  STOP" Style="{StaticResource StopButtonStyle}"
+                        IsEnabled="False" Margin="8,0,0,0"
+                        Click="StopButton_Click"/>
+
+                <Rectangle Grid.Column="2" Width="1" Fill="#3A3A4A" Margin="10,0"/>
+
+                <!-- フィルター -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="FILTER:" Foreground="#A0A8B8" FontSize="11" FontWeight="Bold"
+                               VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <CheckBox x:Name="FilterKeyboard" Content="Keyboard"
+                              Style="{StaticResource FilterCheckStyle}"
+                              IsChecked="True" Margin="0,0,12,0"
+                              Checked="Filter_Changed" Unchecked="Filter_Changed"/>
+                    <CheckBox x:Name="FilterMouse" Content="Mouse"
+                              Style="{StaticResource FilterCheckStyle}"
+                              IsChecked="True"
+                              Checked="Filter_Changed" Unchecked="Filter_Changed"/>
+                </StackPanel>
+
+                <Rectangle Grid.Column="4" Width="1" Fill="#3A3A4A" Margin="10,0"/>
+
+                <!-- 検索 -->
+                <Border Grid.Column="5" Background="#2A2A35" CornerRadius="4"
+                        BorderThickness="1" BorderBrush="#4A4A5A" Padding="8,4">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔍 " Foreground="#8890A0" VerticalAlignment="Center" FontSize="12"/>
+                        <TextBox x:Name="SearchBox" Width="160" Background="Transparent"
+                                 Foreground="#FFFFFF" BorderThickness="0"
+                                 FontFamily="Consolas" FontSize="13"
+                                 VerticalAlignment="Center"
+                                 TextChanged="SearchBox_TextChanged">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Grid>
+                                                    <TextBlock Text="Search..."
+                                                               Foreground="#5A6070"
+                                                               FontFamily="Consolas" FontSize="13"
+                                                               VerticalAlignment="Center">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Value="">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    <ScrollViewer x:Name="PART_ContentHost"/>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </StackPanel>
+                </Border>
+
+                <Button Grid.Column="7" x:Name="ExportCsvButton"
+                        Content="↓  CSV EXPORT" Style="{StaticResource CsvButtonStyle}"
+                        IsEnabled="False" Click="ExportCsvButton_Click"/>
+
+                <Button Grid.Column="9" x:Name="ClearButton"
+                        Content="✕  CLEAR" Style="{StaticResource ClearButtonStyle}"
+                        IsEnabled="False" Click="ClearButton_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- ログリスト -->
+        <ListView Grid.Row="2" x:Name="LogListView"
+                  Style="{StaticResource LogListStyle}"
+                  VirtualizingPanel.IsVirtualizing="True"
+                  VirtualizingPanel.VirtualizationMode="Recycling"
+                  SelectionMode="Extended"
+                  KeyDown="LogListView_KeyDown">
+            <ListView.View>
+                <GridView x:Name="LogGridView">
+                    <GridViewColumn x:Name="ColIndex" Header="#" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Index}"
+                                           Foreground="#6A7080" FontSize="11"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ColTimestamp" Header="TIMESTAMP" Width="160">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Timestamp}"
+                                           Foreground="#D0D8E0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ColType" Header="TYPE" Width="90">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="2" Padding="6,2"
+                                        Background="{Binding TypeBackground}">
+                                    <TextBlock Text="{Binding Type}"
+                                               Foreground="{Binding TypeForeground}"
+                                               FontSize="10" FontWeight="Bold"/>
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ColAction" Header="ACTION" Width="120">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Action}"
+                                           Foreground="#B0B8C8"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ColDetail" Header="DETAIL" Width="300">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Detail}"
+                                           Foreground="#FFFFFF"
+                                           FontWeight="Bold"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ColPosition" Header="POSITION" Width="120">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Position}"
+                                           Foreground="#A0B0C0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ColWindowTitle" Header="WINDOW TITLE" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding WindowTitle}"
+                                           Foreground="#A0B0C0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- ステータスバー -->
+        <Border Grid.Row="3" Background="#111115" Padding="20,0">
+            <Grid>
+                <TextBlock x:Name="StatusLabel"
+                           Text="Ready — Press START to begin logging"
+                           Foreground="#A0A8B8" FontSize="11"
+                           VerticalAlignment="Center"/>
+                <TextBlock x:Name="SessionLabel"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Foreground="#A0A8B8" FontSize="11"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

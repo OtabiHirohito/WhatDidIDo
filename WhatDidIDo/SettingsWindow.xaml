@@ -1,0 +1,108 @@
+<Window x:Class="WhatDidIDo.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="設定" Height="520" Width="520"
+        WindowStartupLocation="CenterOwner"
+        Background="#1A1A1E"
+        Foreground="#E0E0E0"
+        FontFamily="Consolas"
+        ResizeMode="NoResize">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ヘッダー -->
+        <TextBlock Grid.Row="0" Text="⚙ 設定" FontSize="18" Foreground="#FFFFFF" Margin="0,0,0,20"/>
+
+        <!-- 設定リスト -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,10,0">
+
+                <!-- 1. START時に自動でCLEAR -->
+                <Border Background="#22222A" CornerRadius="6" Padding="14,12" Margin="0,0,0,12">
+                    <CheckBox x:Name="ChkAutoClearOnStart" Content="START時に自動でログをCLEARする"
+                              Foreground="#E0E0E0" FontSize="13"/>
+                </Border>
+
+                <!-- 2. 自動停止 -->
+                <Border Background="#22222A" CornerRadius="6" Padding="14,12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <CheckBox x:Name="ChkAutoStop" Content="指定秒数が経過したら自動で記録を停止する"
+                                  Foreground="#E0E0E0" FontSize="13" Margin="0,0,0,8"
+                                  Checked="ChkAutoStop_Changed" Unchecked="ChkAutoStop_Changed"/>
+                        <StackPanel Orientation="Horizontal" Margin="24,0,0,0">
+                            <TextBlock Text="停止時間 (秒):" VerticalAlignment="Center" Foreground="#A0A8B8" Margin="0,0,10,0"/>
+                            <TextBox x:Name="TxtAutoStopSeconds" Width="80" Background="#1A1A1E" Foreground="#FFFFFF"
+                                     BorderBrush="#3A3A4A" Padding="6,3" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 3. 上書き記録 -->
+                <Border Background="#22222A" CornerRadius="6" Padding="14,12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <CheckBox x:Name="ChkMaxEntries" Content="件数上限を超えたら古い記録から順に削除する"
+                                  Foreground="#E0E0E0" FontSize="13" Margin="0,0,0,8"
+                                  Checked="ChkMaxEntries_Changed" Unchecked="ChkMaxEntries_Changed"/>
+                        <StackPanel Orientation="Horizontal" Margin="24,0,0,0">
+                            <TextBlock Text="保持件数上限:" VerticalAlignment="Center" Foreground="#A0A8B8" Margin="0,0,10,0"/>
+                            <TextBox x:Name="TxtMaxEntriesCount" Width="80" Background="#1A1A1E" Foreground="#FFFFFF"
+                                     BorderBrush="#3A3A4A" Padding="6,3" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 4. ブラックリスト -->
+                <Border Background="#22222A" CornerRadius="6" Padding="14,12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <CheckBox x:Name="ChkBlacklist" Content="指定したACTION / DETAILを記録しない"
+                                  Foreground="#E0E0E0" FontSize="13" Margin="0,0,0,8"
+                                  Checked="ChkBlacklist_Changed" Unchecked="ChkBlacklist_Changed"/>
+                        <StackPanel Margin="24,0,0,0">
+                            <TextBlock Text="対象項目 (カンマ区切り):" Foreground="#A0A8B8" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtBlacklistItems" Background="#1A1A1E" Foreground="#FFFFFF"
+                                     BorderBrush="#3A3A4A" Padding="6,3" HorizontalAlignment="Stretch"/>
+                            <TextBlock Text="例: A, KeyDown, Left Click" Foreground="#606878" FontSize="11" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 5. 自動CSV保存 -->
+                <Border Background="#22222A" CornerRadius="6" Padding="14,12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <CheckBox x:Name="ChkAutoCsv" Content="記録停止時に自動で指定フォルダーへCSVを保存する"
+                                  Foreground="#E0E0E0" FontSize="13" Margin="0,0,0,8"
+                                  Checked="ChkAutoCsv_Changed" Unchecked="ChkAutoCsv_Changed"/>
+                        <StackPanel Margin="24,0,0,0">
+                            <TextBlock Text="保存先フォルダー:" Foreground="#A0A8B8" Margin="0,0,0,4"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" x:Name="TxtAutoCsvPath" Background="#1A1A1E" Foreground="#FFFFFF"
+                                         BorderBrush="#3A3A4A" Padding="6,3" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" Content="参照..." Margin="8,0,0,0" Padding="12,3"
+                                        Background="#323240" Foreground="#FFFFFF" BorderBrush="#4A4A5A" Cursor="Hand"
+                                        Click="BtnBrowseFolder_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- フッターボタン -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="保存" Width="84" Height="32" Margin="0,0,10,0" Background="#00D49D" Foreground="#0D0D0F"
+                    FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="BtnSave_Click"/>
+            <Button Content="キャンセル" Width="84" Height="32" Background="#323240" Foreground="#FFFFFF"
+                    BorderBrush="#4A4A5A" Cursor="Hand" Click="BtnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
